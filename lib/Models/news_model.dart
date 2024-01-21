@@ -13,6 +13,7 @@ class NewsModel {
       required this.publishedAt,
       required this.author,
       required this.content});
+
   factory NewsModel.fromJson(Map<String, dynamic> jsonData) {
     return NewsModel(
         title: jsonData['title'],
