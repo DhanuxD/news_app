@@ -1,10 +1,10 @@
 class NewsModel {
-  String title;
-  String description;
-  String urlToImage;
-  String publishedAt;
-  String author;
-  String content;
+  String? title;
+  String? description;
+  String? urlToImage;
+  String? publishedAt;
+  String? author;
+  String? content;
 
   NewsModel(
       {required this.title,

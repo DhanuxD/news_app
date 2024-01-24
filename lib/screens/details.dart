@@ -15,6 +15,8 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  String defaultImage =
+      'https://i.ibb.co/NFJBpHX/istockphoto-961904768-640x640.jpg';
   bool showTitle = true;
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class _DetailsPageState extends State<DetailsPage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.network(
-                widget.allArticalsFromOtherPage.urlToImage,
+                widget.allArticalsFromOtherPage.urlToImage ?? defaultImage,
               ),
             ),
             Padding(
@@ -57,16 +59,16 @@ class _DetailsPageState extends State<DetailsPage> {
                 alignment: Alignment.topLeft,
                 child: Text(
                   DateFormat.yMd().add_jm().format(DateTime.parse(
-                      widget.allArticalsFromOtherPage.publishedAt)),
+                      widget.allArticalsFromOtherPage.publishedAt ?? '')),
                   style: TextStyle(fontFamily: "font3", color: Colors.black),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                widget.allArticalsFromOtherPage.title,
+                widget.allArticalsFromOtherPage.title ?? '',
                 style: TextStyle(
                     fontFamily: "font3", color: Colors.black, fontSize: 25),
               ),
@@ -79,7 +81,7 @@ class _DetailsPageState extends State<DetailsPage> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 15, vertical: 0),
               child: Text(
-                widget.allArticalsFromOtherPage.content,
+                widget.allArticalsFromOtherPage.content ?? '',
                 maxLines: showTitle ? 2 : null,
                 overflow: TextOverflow.fade,
                 style: TextStyle(fontFamily: 'font3', fontSize: 20),

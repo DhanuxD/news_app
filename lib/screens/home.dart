@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, no_leading_underscores_for_local_identifiers
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:news_app/Models/news_model.dart';
@@ -19,8 +17,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //NewsApi allArticals = NewsApi();
+  late Future<List<NewsModel>> _searchResult;
   NewsApi? allArticals;
+  String defaultImage =
+      'https://i.ibb.co/NFJBpHX/istockphoto-961904768-640x640.jpg';
 
   Future<void> refresh() async {
     await Future.delayed(const Duration(seconds: 2));
@@ -33,12 +33,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     allArticals = NewsApi();
+    _searchResult = allArticals!.getNews(context: context);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _searchWord = TextEditingController();
+    TextEditingController searchWord = TextEditingController();
     final classInstancee = Provider.of<ChangeTheme>(
       context,
     );
@@ -68,18 +70,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.favorite_border,
-                color: Colors.black,
-              )),
+            onPressed: () {},
+            icon: const Icon(
+              Icons.favorite_border,
+              color: Colors.black,
+            ),
+          ),
           const SizedBox(
             width: 10,
           ),
         ],
       ),
       body: FutureBuilder<List<NewsModel>>(
-        future: allArticals!.getNews(context: context),
+        future: _searchResult,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
@@ -90,15 +93,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.only(
                       top: 15, left: 30, right: 30, bottom: 20),
                   child: TextField(
-                      controller: _searchWord,
-                      //  onChanged: _runFilter(searchKeyWord: _searchWord.text),
-                      obscureText: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: decorationtextFiled.copyWith(
-                        hintText: "Search",
-                        hintStyle: const TextStyle(fontFamily: "font3"),
-                        suffixIcon: const Icon(Icons.search),
-                      )),
+                    controller: searchWord,
+                    obscureText: false,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: decorationtextFiled.copyWith(
+                      hintText: "Search",
+                      hintStyle: const TextStyle(fontFamily: "font3"),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          if (searchWord.text.isEmpty) {
+                          setState(() {
+                              _searchResult =
+                                  allArticals!.getNews(context: context);
+                          });
+                          } else {
+                            _runFilter(searchKeyWord: searchWord.text);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
                 ),
 
                 SizedBox(
@@ -121,9 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 // Generated code for this topSearchBar Widget...
                 Expanded(
                   child: RefreshIndicator(
@@ -151,24 +164,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailsPage(
-                                                      allArticalsFromOtherPage:
-                                                          _foundUsers[index],
-                                                    )),
+                                              builder: (context) => DetailsPage(
+                                                allArticalsFromOtherPage:
+                                                    _foundUsers[index],
+                                              ),
+                                            ),
                                           );
                                         },
                                         child: ContentWidget(
-                                          title: _foundUsers[index].title,
+                                          title: _foundUsers[index].title ?? '',
                                           decription:
-                                              _foundUsers[index].description,
-                                          imgurl: _foundUsers[index].urlToImage,
-                                          date: _foundUsers[index]
-                                              .publishedAt
-                                              .toString(),
-                                          author: _foundUsers[index]
-                                              .author
-                                              .toString(),
+                                              _foundUsers[index].description ??
+                                                  '',
+                                          imgurl:
+                                              _foundUsers[index].urlToImage ??
+                                                  defaultImage,
+                                          date:
+                                              _foundUsers[index].publishedAt ??
+                                                  ''.toString(),
+                                          author: _foundUsers[index].author ??
+                                              ''.toString(),
                                         ),
                                       )
                                     : const Center(
@@ -195,5 +210,19 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  Future _runFilter({required String searchKeyWord}) async {
+    // List<NewsModel> newList = [];
+
+    // newList = await allArticals!
+    //  .getSearchNews(context: context, query: searchKeyWord);
+
+    if (mounted) {
+      setState(() {
+        _searchResult =
+            allArticals!.getSearchNews(context: context, query: searchKeyWord);
+      });
+    }
   }
 }

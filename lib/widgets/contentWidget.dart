@@ -69,7 +69,7 @@ class ContentWidget extends StatelessWidget {
                           title,
                           maxLines: 5,
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Color.fromARGB(255, 72, 236, 248),
                               fontWeight: FontWeight.bold,
                               fontFamily: "font3",
                               fontSize: 20),
